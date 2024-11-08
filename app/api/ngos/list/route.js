@@ -6,3 +6,6 @@ export async function GET() {
     const requests = await NGORequest.find({});
     return new Response(JSON.stringify({ success: true, data: requests }), { status: 200 });
 }
+
+
+
