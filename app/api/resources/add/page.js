@@ -1,31 +1,44 @@
-import { useState, useEffect } from 'react';
+'use client';
 
-export default function ResourcesPage() {
-    const [resources, setResources] = useState([]);
+import { useState } from 'react';
 
-    useEffect(() => {
-        async function fetchResources() {
-            const response = await fetch('/api/resources/list');
-            const data = await response.json();
-            setResources(data.data);
+export default function AddResourcePage() {
+    const [formData, setFormData] = useState({
+        title: '',
+        type: 'ebook',
+        subject: '',
+        grade: '',
+        link: '',
+        description: ''
+    });
+
+    const handleChange = e => {
+        setFormData({ ...formData, [e.target.name]: e.target.value });
+    };
+
+    const handleSubmit = async e => {
+        e.preventDefault();
+        const response = await fetch('/api/resources/add', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(formData),
+        });
+        if (response.ok) {
+            alert("Resource added successfully!");
         }
-        fetchResources();
-    }, []);
+    };
 
     return (
         <div className="container mx-auto p-8">
-            <h2 className="text-3xl font-bold mb-6">Educational Resources</h2>
-            <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                {resources.map(resource => (
-                    <li key={resource._id} className="p-4 border rounded-lg shadow bg-white">
-                        <h3 className="text-xl font-semibold mb-2">{resource.title}</h3>
-                        <p className="mb-2">{resource.description}</p>
-                        <a href={resource.link} target="_blank" className="text-blue-500 hover:underline">
-                            Access Resource
-                        </a>
-                    </li>
-                ))}
-            </ul>
+            <h2 className="text-3xl font-bold mb-6">Add a New Resource</h2>
+            <form onSubmit={handleSubmit} className="space-y-4">
+                <input name="title" onChange={handleChange} placeholder="Title" className="w-full p-2 border rounded" />
+                <input name="subject" onChange={handleChange} placeholder="Subject" className="w-full p-2 border rounded" />
+                <input name="grade" onChange={handleChange} placeholder="Grade" className="w-full p-2 border rounded" />
+                <input name="link" onChange={handleChange} placeholder="Resource Link" className="w-full p-2 border rounded" />
+                <textarea name="description" onChange={handleChange} placeholder="Description" className="w-full p-2 border rounded" />
+                <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Add Resource</button>
+            </form>
         </div>
     );
 }
